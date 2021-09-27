@@ -6,6 +6,8 @@ class Board {
 
     var BoardRepresentation: BoardRepresentation = BoardRepresentation()
     var MoveStack: MutableList<Int> = mutableListOf()
+    val zobrist = Zobrist()
+    val zobristTable = zobrist.createZobristTable()
 
     fun PushMove(field: Int) {
 
@@ -23,10 +25,12 @@ class Board {
         when (BoardRepresentation.SideToMove) {
             Player.Circle -> {
                 BoardRepresentation.Fields[field] = Field.Circle.FieldValue
+                BoardRepresentation.ZobristKey = BoardRepresentation.ZobristKey xor zobristTable[0][field]
                 BoardRepresentation.SideToMove = Player.Cross
             }
             Player.Cross -> {
                 BoardRepresentation.Fields[field] = Field.Cross.FieldValue
+                BoardRepresentation.ZobristKey = BoardRepresentation.ZobristKey xor zobristTable[1][field]
                 BoardRepresentation.SideToMove = Player.Circle
             }
 
@@ -49,8 +53,15 @@ class Board {
 
         // looks up the last move made and clears the field (undoing the move)
         // adds the field back to the empty fields and removes it from the occupied fields
+        if (BoardRepresentation.Fields[MoveStack.last()] == Field.Circle.FieldValue){
+            BoardRepresentation.ZobristKey = BoardRepresentation.ZobristKey xor zobristTable[0][MoveStack.last()]
+        } else if (BoardRepresentation.Fields[MoveStack.last()] == Field.Cross.FieldValue){
+            BoardRepresentation.ZobristKey = BoardRepresentation.ZobristKey xor zobristTable[1][MoveStack.last()]
+        }
 
         BoardRepresentation.Fields[MoveStack.last()] = Field.Empty.FieldValue
+
+
         BoardRepresentation.OccupiedFields.remove(MoveStack.last())
         BoardRepresentation.EmptyFields.add(MoveStack.last())
         MoveStack.remove(MoveStack.last())
