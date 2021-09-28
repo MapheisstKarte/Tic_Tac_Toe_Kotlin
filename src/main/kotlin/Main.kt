@@ -16,16 +16,18 @@ fun main(args: Array<String>) {
             val move = readLine()!!.toInt()
             board.PushMove(move)
             board.DrawBoard()
-            println("Zobrist Key: ${board.BoardRepresentation.ZobristKey}")
+            println("Zobrist Key: ${board.BoardRepresentation.ZobristKey.toString(16)}")
 
         } else {
 
-            var time = System.currentTimeMillis()
-            val move = search.findBestMove(board, -1)
+            val time = System.currentTimeMillis()
+            val searchResult = search.findBestMove(board, -1)
             println("time to search for move: ${System.currentTimeMillis().minus(time)}")
-            board.PushMove(move)
+            board.PushMove(searchResult.move)
             board.DrawBoard()
-            println("Zobrist Key: ${board.BoardRepresentation.ZobristKey}")
+            println("Evaluated Score: ${-searchResult.score}")
+            println("Calculated Positions: ${searchResult.calculatedPositions}")
+            println("Zobrist Key: ${board.BoardRepresentation.ZobristKey.toString(16)}")
         }
     }
 }
