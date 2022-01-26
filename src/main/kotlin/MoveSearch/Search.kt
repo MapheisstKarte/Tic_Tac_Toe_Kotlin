@@ -54,7 +54,7 @@ class Search {
 
                  }
                  else -> {
-                     score = zobristMap.get(board.BoardRepresentation.ZobristKey)!!0
+                     score = zobristMap.get(board.BoardRepresentation.ZobristKey)!!
                  }
             }
 
