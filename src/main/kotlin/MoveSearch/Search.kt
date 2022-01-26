@@ -8,7 +8,6 @@ import Board.Zobrist
 data class SearchResult(
     var score: Int  = 0,
     var move: Int = -1,
-    var calculatedPositions: Int = 0
 )
 
 class Search {
@@ -33,34 +32,31 @@ class Search {
 
         if (board.BoardRepresentation.GameOver){
 
-
-            if (zobristMap.get(board.BoardRepresentation.ZobristKey) != null){
-                // println("transposition found: ${board.BoardRepresentation.ZobristKey.toString(16)}")
-                return SearchResult(score = zobristMap.get(board.BoardRepresentation.ZobristKey)!!, move = move, calculatedPositions = calculatedPositions)
-
-            }
-
-            calculatedPositions += 1
-
             if (board.BoardRepresentation.CircleWon) {
-                zobristMap.put(board.BoardRepresentation.ZobristKey, 99 * player)
-
-                return SearchResult(score = 99 * player, move = move, calculatedPositions = calculatedPositions)
+                return SearchResult(score = 99 * player, move = move)
             }
             if (board.BoardRepresentation.CrossWon) {
-                zobristMap.put(board.BoardRepresentation.ZobristKey, -99 * player)
-                return SearchResult(score = -99 * player, move = move, calculatedPositions = calculatedPositions)
+                return SearchResult(score = -99 * player, move = move)
             }
 
-            return SearchResult(score = 0, move = move, calculatedPositions = calculatedPositions)
+            return SearchResult(score = 0, move = move)
             }
 
         board.BoardRepresentation.EmptyFields.toList().forEach {
 
             board.PushMove(it)
-            val searchResult = MiniMax(board, -player, zobristMap)
-            val score = -searchResult.score
-            calculatedPositions += searchResult.calculatedPositions
+
+            var score = 0
+            when(zobristMap.get(board.BoardRepresentation.ZobristKey)){
+                 null -> {
+                     score = -MiniMax(board, -player, zobristMap).score
+                     zobristMap.put(board.BoardRepresentation.ZobristKey, score)
+
+                 }
+                 else -> {
+                     score = zobristMap.get(board.BoardRepresentation.ZobristKey)!!0
+                 }
+            }
 
             board.UndoMove()
 
@@ -71,6 +67,6 @@ class Search {
             }
         }
 
-        return SearchResult(score = maxScore, move = move, calculatedPositions = calculatedPositions)
+        return SearchResult(score = maxScore, move = move)
     }
 }

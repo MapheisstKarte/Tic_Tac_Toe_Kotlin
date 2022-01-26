@@ -26,7 +26,6 @@ fun main(args: Array<String>) {
             board.PushMove(searchResult.move)
             board.DrawBoard()
             println("Evaluated Score: ${-searchResult.score}")
-            println("Calculated Positions: ${searchResult.calculatedPositions}")
             println("Zobrist Key: ${board.BoardRepresentation.ZobristKey.toString(16)}")
         }
     }
